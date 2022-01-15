@@ -55,17 +55,6 @@ router.get('/guess', async (req, res) => {
     req.session.game.guesses.push(guess)
     const solved = isGameSolved(req.session.game)
     req.session.game.solved = solved
-    if (solved) {
-        const stats = await incrementStats(['gamesPlayed', 'gamesWon'])
-        let totalGuessAvg = req.session.game.guesses.length
-        if (stats.guessAverage) {
-            totalGuessAvg = Math.round(((stats.guessAverage + totalGuessAvg) / 2) * 10) / 10
-        }
-        await addNewStat('guessAverage', totalGuessAvg)
-        if (req.ip) {
-            await addValueToList('players', req.ip, true)
-        }
-    }
 
     res.json({
         guesses: req.session.game.guesses,
@@ -129,8 +118,8 @@ router.get('/answer', async (req, res) => {
 
 router.get('/dictionary', (req, res) => {
     res.json({
-        5: require(`../../lists/scrabble_5.json`),
-        6: require(`../../lists/scrabble_6.json`)
+        5: require(`../../lists/wards5.json`),
+        6: require(`../../lists/wards6.json`)
     })
 })
 

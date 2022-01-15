@@ -17,7 +17,7 @@ if (options) {
     localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
 }
 if (options.dark) {
-    document.body.classList.add('dark-mode')
+    document.getElementsByClassName("ds-page")[0].classList.add('ds-dark')
 }
 
 // ------------------ Convert the startTime to date display -------------------- //
@@ -47,17 +47,5 @@ if (stats) {
     stats = JSON.parse(blankStats)
     localStorage.setItem(STATS_KEY, JSON.stringify(stats))
 }
-showStats(stats)
 
 
-function showStats(stats) {
-    const playerStatsEl = document.querySelector('.player-stats')
-    playerStatsEl.querySelector('.games-played').innerText = stats.played
-    playerStatsEl.querySelector('.games-won').innerText = stats.won
-    playerStatsEl.querySelector('.games-quit').innerText = stats.quit
-    playerStatsEl.querySelector('.guess-average').innerText = stats.guessAvg
-    if (stats.played > 0) {
-        playerStatsEl.querySelector('.games-won-percent').innerText = Math.round((stats.won / stats.played) * 100)
-        playerStatsEl.querySelector('.games-quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
-    }
-}

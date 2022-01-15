@@ -5,17 +5,14 @@ const pastGuesses = document.querySelector('.past-guesses')
 const inputs = Array.from(document.querySelectorAll('.input.letter'))
 const submitGuessEl = document.querySelector('#submit-guess')
 const guessInfo = document.querySelector('.guess-info')
-const gameHelp = document.querySelector('.game-help')
-gameHelp.style.display = 'none'
 const gameOptionsEl = document.querySelector('.game-options')
 gameOptionsEl.style.display = 'none'
-const gameStats = document.querySelector('.stats')
 let dictionary = null
 
 
 //------------------ Check for options -------------------- //
 const OPTIONS_KEY = 'guessle-options'
-let blankOptions = JSON.stringify({ dark: false, depth: 2, duplicateLetters: true, wordLength: 5 })
+let blankOptions = JSON.stringify({ dark: false, depth: 3, duplicateLetters: true, wordLength: 5 })
 let options = localStorage.getItem(OPTIONS_KEY)
 if (options) {
     try {
@@ -52,7 +49,6 @@ if (stats) {
     stats = JSON.parse(blankStats)
     localStorage.setItem(STATS_KEY, JSON.stringify(stats))
 }
-showStats(stats)
 
 
 //------------------ Set up game listeners -------------------- //
@@ -85,8 +81,6 @@ document.querySelector('.give-up').addEventListener('click', async (e) => {
     return false
 })
 
-document.querySelector('.help').addEventListener('click', toggleHelp)
-document.querySelector('.close-help').addEventListener('click', toggleHelp)
 document.querySelector('.options').addEventListener('click', toggleOptions)
 document.querySelector('.close-options').addEventListener('click', () => {
     toggleOptions()
@@ -94,13 +88,6 @@ document.querySelector('.close-options').addEventListener('click', () => {
 })
 
 
-document.querySelector('.reset-stats').addEventListener('click', () => {
-    if (window.confirm('Are you sure you want to reset your stats?')) {
-        stats = JSON.parse(blankStats)
-        localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-        showStats(stats)
-    }
-})
 
 gameOptionsEl.querySelector('#dark-mode').addEventListener('change', toggleDarkMode)
 Array.from(gameOptionsEl.querySelectorAll('[name="word-length"]')).forEach((el) => {
@@ -109,7 +96,6 @@ Array.from(gameOptionsEl.querySelectorAll('[name="word-length"]')).forEach((el) 
 Array.from(gameOptionsEl.querySelectorAll('[name="word-depth"]')).forEach((el) => {
     el.addEventListener('click', () => { setWordDepth(Number(el.value)) })
 })
-gameOptionsEl.querySelector('#dupe-letters').addEventListener('change', toggleDuplicateLetters)
 
 
 //------------------ Main event handlers -------------------- //
@@ -123,11 +109,12 @@ function toggleOptions() {
 }
 
 function toggleDarkMode() {
+  console.log("running")
     options.dark = !options.dark
     if (options.dark) {
-        document.body.classList.add('dark-mode')
+      document.getElementsByClassName("ds-page")[0].classList.add('ds-dark')
     } else {
-        document.body.classList.remove('dark-mode')
+      document.getElementsByClassName("ds-page")[0].classList.remove('ds-dark')
     }
     localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
 }
@@ -158,7 +145,7 @@ async function sendServerOptions(opts) {
 }
 
 function handleKeyboardEntry(letter) {
-    if (letter === 'del') {
+    if (letter === 'DEL') {
         let lastEl = null
         inputs.forEach((el) => {
             if (el.innerText) { lastEl = el }
@@ -222,7 +209,6 @@ async function submitGuess() {
             stats.played++
             stats.won++
             localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-            showStats(stats)
 
             const solution = document.querySelector('.solution-info')
             solution.innerHTML = `Congratulations! You solved this Guessle in 
@@ -253,35 +239,22 @@ function addGuess(guess) {
 }
 
 function showLetterHints(guesses) {
+  console.log(guesses)
+  console.log(letterHints)
     if (!Object.keys(letterHints).length) { return }
     guesses.forEach((guess) => {
         guess.forEach((guessLetter) => {
-            letterHints[guessLetter.letter].classList.add(`check-${guessLetter.check}`)
+            letterHints[guessLetter.letter.toUpperCase()].classList.add(`check-${guessLetter.check}`)
         })
     })
 }
 
-function showStats(stats) {
-    gameStats.querySelector('.play-count').innerText = stats.played
-    gameStats.querySelector('.win-count').innerText = stats.won
-    gameStats.querySelector('.quit-count').innerText = stats.quit
-    gameStats.querySelector('.guess-avg').innerText = stats.guessAvg
-    if (stats.played > 0) {
-        gameStats.querySelector('.win-percent').innerText = Math.round((stats.won / stats.played) * 100)
-        gameStats.querySelector('.quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
-    }
-}
-
 function initOptions(options) {
     if (options.dark) {
-        document.body.classList.add('dark-mode')
+        document.getElementsByClassName("ds-page")[0].classList.add('ds-dark')
         gameOptionsEl.querySelector('#dark-mode').setAttribute('checked', 'checked')
     }
     gameOptionsEl.querySelector(`.word-length[value="${options.wordLength}"]`).setAttribute('checked', 'checked')
-    gameOptionsEl.querySelector(`.word-depth[value="${options.depth}"]`).setAttribute('checked', 'checked')
-    if (options.duplicateLetters) {
-        gameOptionsEl.querySelector('#dupe-letters').setAttribute('checked', 'checked')
-    }
 }
 
 function setMessage(msg, type='error') {
@@ -318,13 +291,6 @@ async function retrieveDictionary() {
 //------------------ Some startup actions -------------------- //
 
 ;(async () => {
-    console.info('Getting current game status...')
-    const resp = await fetch('/status')
-    if (resp.status === 200) {
-        const guesses = (await resp.json()).guesses
-        showLetterHints(guesses)        
-    }
-
     try {
         dictionary = JSON.parse(localStorage.getItem('guessle-dictionary'))
         if (!Array.isArray(dictionary[5]) || !Array.isArray(dictionary[6])) {

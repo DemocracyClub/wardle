@@ -4,41 +4,55 @@ html(lang='en-US')
         meta(charset='UTF-8')
         meta(http-equiv='content-type', content='text/html; charset=utf-8')
 
-        title= 'Guessle ' + title
+        title= 'Wardle from Democracy Club ' + title
 
         meta(name='description', content='A word game based on Wordle')
         meta(name='viewport', content='width=device-width, initial-scale=1')
 
         link(rel='stylesheet', href='/main.css')
-    
+        link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='https://democracyclub.org.uk/static/images/logo_icon.png')
+
     body
-        header
-            nav
-                ul
-                    li.help
-                    li.options
-            
-            h1 Guessle
+        div.ds-page
+            header.ds-header
+                a.ds-logo(href='https://democracyclub.org.uk')
+                    img(src='https://democracyclub.org.uk/static/images/logo_icon.svg')
+                    span
+                      | Democracy Club
+                nav
+                    ul
+                        li.options
+                          a
+                            | Options
 
-        main#main-content
-            if error
-                aside.alert.alert-error
-                    p= error
-            if info
-                aside.alert.alert-info
-                    p= info
-            
-            block content
+            main.ds-stack#main
+                h1
+                  | Wardle
+                p
+                  | Like&nbsp;
+                  a(href="https://www.powerlanguage.co.uk/wordle/")
+                    | Wordle
+                  |&nbsp;but for UK ward names.
+                if error
+                    aside.ds-status
+                        p.ds-status-error = error
+                if info
+                    aside.ds-status
+                        p= info
 
-        footer
-            p 
-                | Yes, it's a 
-                a(href='https://www.powerlanguage.co.uk/wordle/') Wordle
-                |  clone.
-            p
-                | &copy; Jordan Kasper 2021 | See this code on 
-                a(href='https://github.com/jakerella/guessle' target='_blank' title='View the Wordle Clone code on GitHub')
-                    | GitHub
-            p 
-                | View the game's 
-                a(href='/stats') global stats
+                block content
+
+            footer.ds-footer
+                p
+                    | Yes, it's a&nbsp;
+                    a(href='https://www.powerlanguage.co.uk/wordle/') Wordle
+                    |  clone.
+                p
+                    | See this code on&nbsp;
+                    a(href='https://github.com/jakerella/guessle' target='_blank' title='View the Wordle Clone code on GitHub')
+                        | GitHub
+
+                p
+                    | Initial code thanks to&nbsp;
+                    a(href='https://github.com/jakerella/guessle' target='_blank' title='View the Wordle Clone code on GitHub')
+                        | Jordan Kasper

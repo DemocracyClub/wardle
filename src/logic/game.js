@@ -1,11 +1,11 @@
 const AppError = require('../util/AppError')
 const dict = {
-    5: require('../../lists/scrabble_5.json'),
-    6: require('../../lists/scrabble_6.json')
+    5: require('../../lists/wards5.json'),
+    6: require('../../lists/wards6.json')
 }
 const frequent = {
-    5: require('../../lists/frequent_5.json'),
-    6: require('../../lists/frequent_6.json')
+    5: require('../../lists/wards5.json'),
+    6: require('../../lists/wards6.json')
 }
 
 const check = {
@@ -22,10 +22,10 @@ const DIFFICULTY_DEPTHS = {
 
 module.exports = {
     generateGame(options) {
-        const wordLength = (options.wordLength && dict[options.wordLength]) ? options.wordLength : 5
-        options.depth = (Number(options.depth)) ? Number(options.depth) : 2
-        
-        const wordDepth = (DIFFICULTY_DEPTHS[options.depth]) ? frequent[wordLength].length / DIFFICULTY_DEPTHS[options.depth] : frequent[wordLength].length / 2
+        const wordLength = (options.wordLength && dict[options.wordLength]) ? options.wordLength : 6
+        options.depth = (Number(options.depth)) ? Number(options.depth) : 3
+
+        const wordDepth = 3
 
         options.dupeLetters = (typeof(options.dupeLetters) === 'boolean') ? options.dupeLetters : true
 
@@ -42,8 +42,9 @@ module.exports = {
     },
 
     makeGuess(game, word) {
+
         if (!dict[game.word.length].includes(word)) {
-            throw new AppError('Sorry, but I don\'t know that word.', 400)
+            throw new AppError('Sorry, but that isn\'t a ward name I know.', 400)
         }
         const prevGuess = game.guesses.map((guess) => guess.map((g) => g.letter).join('')).filter((g) => g === word)
         if (prevGuess.length) {
@@ -57,7 +58,7 @@ module.exports = {
                 stats[game.word[i]] = { count: 0, y: 0, n: 0, s: 0 }
             }
             stats[game.word[i]].count++
-            
+
             if (word[i] === game.word[i]) {
                 guess.push({ letter: word[i], check: check.YAS })
                 stats[game.word[i]].y++
@@ -89,7 +90,7 @@ module.exports = {
 }
 
 function findWord(options, count=0) {
-    const word = frequent[options.wordLength][Math.floor(Math.random() * options.wordDepth)]
+    const word = frequent[options.wordLength][Math.floor(Math.random() * frequent[options.wordLength].length)]
     if (!options.dupes && !/^(?!.*(.).*\1)[a-z]+$/.test(word)) {
         if (count > 100) {
             console.warn('Unable to find word with no dupe letters in first 100 tries')

@@ -2,7 +2,7 @@ const fs = require('fs')
 
 const wordLength = 6
 
-const scrabble = require(`./scrabble_${wordLength}.json`)
+const wards = require(`./wards${wordLength}.txt`)
 let lists = {
     wordfrequencyinfo: fs.readFileSync(`./freq_wordfrequency-info_${wordLength}.txt`).toString().split(/\n/),
     martinweisser: fs.readFileSync(`./freq_martinweisser_${wordLength}.txt`).toString().split(/\n/),
@@ -11,7 +11,7 @@ let lists = {
 
 for (source in lists) {
     console.log(`Filtering ${source} for Scrabble words... (started with ${lists[source].length})`)
-    lists[source] = lists[source].filter((w) => scrabble.includes(w))
+    lists[source] = lists[source].filter((w) => wards.includes(w))
     console.log(`${source} now has ${lists[source].length}`)
 }
 
